@@ -56,20 +56,19 @@ router.post('/register', (req, res) => {
                         newUser.password = hash
                         newUser.save()
                             .then(user => {
-                                console.log(user)
-                                const confirmEmail = new ConfirmEmail(user._id, user.email)
+                                const confirmEmail = new ConfirmEmail(user._id, user.email, process.env.ORIGIN)
                                 const helperOptions = confirmEmail.setHelperOptions()
-                                console.log(helperOptions)
                                 transporter.sendMail(helperOptions, (error, info) => {
-                                    // if (error) console.log(error)
+                                    if (error) console.log(error)
                                 })
                                 res.json(user)
                             })
-98                            .catch(() => console.log(err))
+                            .catch(err => console.log(err))
                     })
                 })
             }
         })
+        .catch(err => console.log(err))
 })
 
 // @route   GET api/users/login
@@ -114,14 +113,15 @@ router.post('/login', (req, res) => {
                         return res.status(400).json(errors);
                     }
                 });
-        });
+        })
+        .catch(err => console.log(err))
 });
 
-// @route   PATCH api/users/confirm/:id
+// @route   GET api/users/confirm/:id : Ideally a patch should work but since we are updating record via href we use get
 // @desc    Confirm user account / Set confirm property to true
 // @access  Public
-router.patch('/confirm/:id', (req, res) => {
-    User.findOneAndUpdate({ _id: req.params.id }, { $set: { confirmed: 'false' } }, { new: true })
+router.get('/confirm/:id', (req, res) => {
+    User.findOneAndUpdate({ _id: req.params.id }, { $set: { confirmed: true } }, { new: true })
         .then(user => res.json(user))
         .catch(err => console.log(err))
 })

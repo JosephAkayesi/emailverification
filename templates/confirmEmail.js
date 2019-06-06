@@ -1,21 +1,21 @@
+const callToAction = require('./callToAction')
+
 class ConfirmEmail {
-    constructor(id, email) {
+    constructor(id, email, origin) {
         this.id = id
         this.email = email
-        console.log('confirm email constructor run')
+        this.origin = origin
     }
 
     setHelperOptions = () => {
-        console.log('confirm email run')
         return {
-            from: '"Happy Hour" <happyhourcodelnapp@gmail.com>',
+            from: `"Email Verification" <${process.env.SENDEREMAIL}>`,
             to: this.email,
-            subject: 'Account check',
+            subject: 'Email Confirmation',
             text: `Please Click on the button below to confirm your account.`,
-            html: `<button type="button" class="btn btn-primary"><a href='http://localhost:5000/api/users/confirm/${this.id}>click to confirm email</a></button>`
+            html: callToAction(this.id, this.origin)
         }
     }
 }
-
 
 module.exports = ConfirmEmail
